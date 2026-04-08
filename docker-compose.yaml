@@ -365,6 +365,8 @@ services:
       - "8501:8501"
     env_file:
       - config/.env
+    volumes:
+      - .:/app
     depends_on:
       weather_postgres:
         condition: service_healthy

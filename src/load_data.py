@@ -28,10 +28,18 @@ def get_engine():
 engine = get_engine()
 
 def load_weather_data(table_name:str, df):
+    # Evitar duplicados baseados no datetime antes de inserir
+    try:
+        query = text(f"SELECT datetime FROM {table_name}")
+        existing_times = pd.read_sql_query(query, con=engine)['datetime']
+        df = df[~df['datetime'].isin(existing_times)]
+        
+        if df.empty:
+            logging.info("Nenhum dado novo para inserir (registro duplicado).")
+            return
+    except Exception as e:
+        logging.warning(f"Não foi possível verificar duplicados (tabela pode não existir): {e}")
+
     df.to_sql(name=table_name, con=engine, if_exists="append", index=False) 
-    
-    logging.info(f"Data loaded into {table_name} successfully.")
-    
-    df_check = pd.read_sql_query(text(f"SELECT * FROM {table_name}"), con=engine)
-    logging.info(f"Data in {table_name}:\n{df_check.head()}")
+    logging.info(f"Foram inseridos {len(df)} novos registros em {table_name}.")
     
