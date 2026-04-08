@@ -335,10 +335,44 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  # Banco de Dados da Aplicação de Clima
+  weather_postgres:
+    image: postgres:16-alpine
+    container_name: weather_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-weather_db}
+      POSTGRES_USER: ${DB_USER:-weather_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-weather_pass123}
+    ports:
+      - "5433:5432" # Porta alterada para não conflitar com o postgres do Airflow
+    volumes:
+      - weather_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-weather_admin} -d ${DB_NAME:-weather_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Dashboard Streamlit
+  weather_dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    container_name: weather_dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    env_file:
+      - config/.env
+    depends_on:
+      weather_postgres:
+        condition: service_healthy
+
 volumes:
   postgres-db-volume:
+  weather_pgdata:
 
 networks:
   default:
     name: shared_weather_net
-    external: true

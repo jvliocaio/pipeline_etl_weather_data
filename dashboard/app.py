@@ -18,7 +18,8 @@ def get_engine():
 @st.cache_data
 def load_data():
     engine = get_engine()
-    query = "SELECT * FROM weather_data"
+    # Ajustado para o nome da tabela correto usado no pipeline
+    query = "SELECT * FROM sp_weather"
     return pd.read_sql(query, engine)
 
 st.title("🌤️ Weather Dashboard")

@@ -10,7 +10,7 @@ from load_data import load_weather_data
 from transform_data import data_transformations
 from dotenv import load_dotenv
 
-env_path = Path(__file__).parent / "config" / ".env"
+env_path = Path(__file__).parent.parent / "config" / ".env"
 load_dotenv(env_path)
 
 API_KEY = os.getenv('API_KEY')

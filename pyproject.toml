@@ -3,7 +3,7 @@ name = "pipeline-weather"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.11"
 dependencies = [
     "ipykernel>=7.2.0",
     "pandas>=3.0.1",
@@ -13,3 +13,7 @@ dependencies = [
     "sqlalchemy>=2.0.48",
     "streamlit>=1.56.0",
 ]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
